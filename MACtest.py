@@ -112,6 +112,19 @@ def distanceRight():
  
     return distance
  
+          
+        
+from __future__ import print_function
+import time
+from pololu_drv8835_rpi import motors, MAX_SPEED
+
+# Set up sequences of motor speeds.
+test_forward_speeds = list(range(0, MAX_SPEED, 1)) + \
+  [MAX_SPEED] * 200 + list(range(MAX_SPEED, 0, -1)) + [0]  
+
+test_reverse_speeds = list(range(0, -MAX_SPEED, -1)) + \
+  [-MAX_SPEED] * 200 + list(range(-MAX_SPEED, 0, 1)) + [0]  
+
 if __name__ == '__main__':
     try:
         while True:
@@ -196,11 +209,9 @@ if __name__ == '__main__':
                     motorleft.stop()
                     motorright.stop()
                     time.sleep(1)
- 
- 
-        # Reset by pressing CTRL + C
-    except KeyboardInterrupt:
-        print("Measurement stopped by User")
-        motorleft.stop()
-        motorright.stop()
-        GPIO.cleanup()
+
+
+    finally:
+        # Stop the motors, even if there is an exception
+        # or the user presses Ctrl+C to kill the process.
+        motors.setSpeeds(0, 0)
